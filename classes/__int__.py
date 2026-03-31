@@ -1,6 +1,8 @@
-self.show_settings = False
+img = pygame.image.load("Images/Doge.png").convert_alpha()
 
-self.volume = 50
+size = 70  # width you want
+ratio = img.get_height() / img.get_width()
 
-self.languages = ["English", "Spanish", "French", "German"]
-self.lang_index = 0
+self.doge = pygame.transform.scale(img, (size, int(size * ratio)))
+
+self.doge_pos = (W // 2 + 200, H // 2 - 50)
