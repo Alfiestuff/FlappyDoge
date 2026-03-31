@@ -23,4 +23,3 @@ class Bird:
 
     def rect(self):
         return pygame.Rect(self.x - 51, self.y - 25, 102, 50)
-    

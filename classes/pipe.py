@@ -3,10 +3,21 @@ import random
 from classes.settings import PW, GAP, H, GH
 
 class Pipe:
+    MIN_H = 140
+
     def __init__(self, x):
         self.x = x
-        self.bh = random.randint(80, H - GH - GAP - 80)
-        self.th = H - GH - GAP - self.bh
+
+        usable = H - GH
+
+        # ensure both pipes always have enough space
+        max_gap_top = usable - GAP - self.MIN_H
+
+        self.gap_y = random.randint(self.MIN_H, max_gap_top)
+
+        self.th = self.gap_y
+        self.bh = usable - self.gap_y - GAP
+
         self.passed = False
 
     def update(self):
@@ -17,6 +28,7 @@ class Pipe:
             pygame.transform.scale(pipe_img, (PW, self.th)),
             False, True
         )
+
         bottom_pipe = pygame.transform.scale(pipe_img, (PW, self.bh))
 
         surf.blit(top_pipe, (self.x, 0))
@@ -24,8 +36,7 @@ class Pipe:
 
         if show_hitbox:
             for r in self.rects():
-                hitbox = r.inflate(-40, -20)
-                pygame.draw.rect(surf, (255, 0, 0), hitbox, 2)
+                pygame.draw.rect(surf, (255, 0, 0), r.inflate(-40, -20), 2)
 
     def rects(self):
         top_rect = pygame.Rect(self.x, 0, PW, self.th).inflate(-40, -20)
