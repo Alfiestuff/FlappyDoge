@@ -4,7 +4,6 @@ from classes.bird import Bird
 from classes.pipe import Pipe
 from classes.utils import draw_grass
 from classes.settings import *
-from classes.pause import Pause
 from classes.menu import Menu
 
 pygame.init()
