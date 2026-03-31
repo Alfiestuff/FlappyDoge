@@ -4,7 +4,7 @@ class Pause:
     def __init__(self):
         self.active = False
         self.font = pygame.font.SysFont("Courier", 32)
-        self.play_img = pygame.image.load("gui/play.png").convert_alpha()
+        self.play_img = pygame.image.load("gui/buttons/play.png").convert_alpha()
         self.play_rect = self.play_img.get_rect(center=(200, 300))
 
     def toggle(self):

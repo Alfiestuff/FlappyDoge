@@ -1,9 +1,11 @@
-import pygame, sys
+import pygame
+import sys
 from classes.bird import Bird
 from classes.pipe import Pipe
 from classes.utils import draw_grass
 from classes.settings import *
 from classes.pause import Pause
+from classes.menu import Menu
 
 pygame.init()
 screen = pygame.display.set_mode((W, H))
@@ -89,5 +91,8 @@ def loop():
 
         pygame.display.update()
 
+
 while True:
+    menu = Menu(screen)
+    menu.run()
     loop()

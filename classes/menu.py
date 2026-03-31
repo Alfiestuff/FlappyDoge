@@ -1,5 +1,3 @@
-# new menu created at 16th july 2025 at 10:05pm 
-
 import pygame
 import sys
 from classes.settings import *
@@ -18,6 +16,7 @@ class Menu:
             pygame.image.load("Images/grass.png").convert_alpha(), (GW, GH)
         )
 
+        # Load button image and resize to medium (300px wide) while keeping aspect ratio
         self.start_button_img = pygame.image.load("gui/buttons/Play.png").convert_alpha()
         button_width = 150
         aspect_ratio = self.start_button_img.get_height() / self.start_button_img.get_width()
