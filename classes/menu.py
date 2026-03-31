@@ -85,7 +85,7 @@ class Menu:
 
         cx = W // 2
 
-        self.play_button = Button(play_img, cx, H // 2 + 60)
+        self.play_button = Button(play_img, cx, H // 2 + 40)
         self.settings_button = Button(settings_img, cx, H // 2 + 120)
 
     def draw_settings(self):
