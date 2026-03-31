@@ -9,7 +9,10 @@ class Menu:
         self.screen = screen
         self.clock = pygame.time.Clock()
         self.scroll = 0
+
         self.running = True
+        self.state = "menu"
+
         self.show_settings = False
         self.volume = 70
         self.drag = False
@@ -18,24 +21,9 @@ class Menu:
         self.languages = ["English", "Spanish", "French"]
 
         self.text = {
-            "English": {
-                "play": "PLAY",
-                "settings": "SETTINGS",
-                "quit": "QUIT",
-                "title": "Flappy Doge"
-            },
-            "Spanish": {
-                "play": "JUGAR",
-                "settings": "AJUSTES",
-                "quit": "SALIR",
-                "title": "Flappy Doge"
-            },
-            "French": {
-                "play": "JOUER",
-                "settings": "PARAMÈTRES",
-                "quit": "QUITTER",
-                "title": "Flappy Doge"
-            }
+            "English": {"play": "PLAY", "settings": "SETTINGS", "quit": "QUIT"},
+            "Spanish": {"play": "JUGAR", "settings": "AJUSTES", "quit": "SALIR"},
+            "French": {"play": "JOUER", "settings": "PARAMÈTRES", "quit": "QUITTER"}
         }
 
         self.W, self.H = self.screen.get_size()
@@ -54,6 +42,7 @@ class Menu:
         size = 70
         ratio = img.get_height() / img.get_width()
         self.doge = pygame.transform.scale(img, (size, int(size * ratio)))
+
         self.doge_pos = (self.W // 2 + 200, self.H // 2 - 50)
 
         self.font = pygame.font.Font("./gui/fonts/pixel.ttf", 28)
@@ -78,6 +67,8 @@ class Menu:
 
         self.lang_rect = pygame.Rect(20, 105, 260, 30)
 
+    # ---------------- DRAW ----------------
+
     def draw_bg(self):
         self.screen.blit(self.sky, (0, 0))
         draw_grass(self.screen, self.grass, self.scroll)
@@ -95,11 +86,8 @@ class Menu:
         pygame.draw.rect(self.screen, (0, 0, 0), rect, 2, border_radius=12)
 
         txt = self.font.render(text, True, (255, 255, 255))
-        self.screen.blit(
-            txt,
-            (rect.centerx - txt.get_width() // 2,
-             rect.centery - txt.get_height() // 2)
-        )
+        self.screen.blit(txt, (rect.centerx - txt.get_width() // 2,
+                               rect.centery - txt.get_height() // 2))
 
     def draw_buttons(self):
         lang = self.languages[self.language_index]
@@ -108,48 +96,7 @@ class Menu:
         self.draw_button(self.settings_rect, (120, 120, 120), self.text[lang]["settings"])
         self.draw_button(self.quit_rect, (0, 120, 255), self.text[lang]["quit"])
 
-    def draw_settings(self):
-        self.panel.fill((25, 25, 25, 240))
-
-        lang = self.languages[self.language_index]
-
-        title = self.font.render(self.text[lang]["settings"], True, (255, 255, 255))
-        self.panel.blit(title, (20, 20))
-
-        vol_txt = self.small_font.render(f"Volume: {self.volume}%", True, (255, 255, 255))
-        self.panel.blit(vol_txt, (20, 80))
-
-        lang_txt = self.small_font.render(
-            f"Language: {lang}",
-            True,
-            (255, 255, 255)
-        )
-        self.panel.blit(lang_txt, (self.lang_rect.x, self.lang_rect.y))
-        pygame.draw.rect(self.panel, (80, 80, 80), self.lang_rect, 1, border_radius=6)
-
-        hint = self.small_font.render("ESC to close", True, (150, 150, 150))
-        self.panel.blit(hint, (20, 140))
-
-        pygame.draw.rect(self.panel, (60, 60, 60), self.slider, border_radius=4)
-
-        fill = int(self.volume / 100 * self.slider.width)
-        pygame.draw.rect(
-            self.panel,
-            (0, 200, 255),
-            (self.slider.x, self.slider.y, fill, self.slider.height),
-            border_radius=4
-        )
-
-        x = self.slider.x + fill
-        y = self.slider.y + self.slider.height // 2
-        pygame.draw.circle(self.panel, (255, 255, 255), (x, y), self.knob_r)
-
-        self.screen.blit(self.panel, self.panel_rect)
-
-    def slider_value(self, mx):
-        x = mx - self.panel_rect.x
-        x = max(self.slider.x, min(x, self.slider.x + self.slider.width))
-        self.volume = int((x - self.slider.x) / self.slider.width * 100)
+    # ---------------- INPUT ----------------
 
     def handle(self):
         for e in pygame.event.get():
@@ -164,23 +111,10 @@ class Menu:
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 mx, my = pygame.mouse.get_pos()
 
-                if self.show_settings:
-                    rx, ry = mx - self.panel_rect.x, my - self.panel_rect.y
-
-                    knob_x = self.slider.x + int(self.volume / 100 * self.slider.width)
-                    knob_y = self.slider.y + self.slider.height // 2
-
-                    if (rx - knob_x) ** 2 + (ry - knob_y) ** 2 < (self.knob_r + 5) ** 2:
-                        self.drag = True
-                        return
-
-                    if self.lang_rect.collidepoint(rx, ry):
-                        self.language_index = (self.language_index + 1) % len(self.languages)
-
-                    return
-
                 if self.play_rect.collidepoint((mx, my)):
+                    self.state = "game"
                     self.running = False
+                    return
 
                 if self.settings_rect.collidepoint((mx, my)):
                     self.show_settings = True
@@ -189,11 +123,7 @@ class Menu:
                     pygame.quit()
                     sys.exit()
 
-            if e.type == pygame.MOUSEBUTTONUP:
-                self.drag = False
-
-            if e.type == pygame.MOUSEMOTION and self.drag and self.show_settings:
-                self.slider_value(pygame.mouse.get_pos()[0])
+    # ---------------- LOOP ----------------
 
     def draw(self):
         self.draw_bg()
@@ -204,7 +134,6 @@ class Menu:
             dark = pygame.Surface((self.W, self.H))
             dark.set_alpha(160)
             self.screen.blit(dark, (0, 0))
-            self.draw_settings()
 
     def run(self):
         while self.running:
@@ -212,5 +141,6 @@ class Menu:
             self.scroll += SPEED
             self.handle()
             self.draw()
-            pygame.mixer.music.set_volume(self.volume / 100)
             pygame.display.update()
+
+        return self.state

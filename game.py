@@ -12,20 +12,20 @@ screen = pygame.display.set_mode((W, H))
 pygame.display.set_caption("Flappy Doge")
 clock = pygame.time.Clock()
 
-try:
-    font = pygame.font.Font("./gui/fonts/pixel.ttf", 32)
-except:
-    font = pygame.font.SysFont("Courier", 32)
+font = pygame.font.Font("./gui/fonts/pixel.ttf", 32)
 
 bird_img = pygame.transform.scale(
     pygame.image.load("Images/Doge.png").convert_alpha(),
     (76.5, 40)
 )
+
 grass_img = pygame.transform.scale(
     pygame.image.load("Images/grass.png").convert_alpha(),
     (GW, GH)
 )
+
 pipe_img = pygame.image.load("Images/pipe.png").convert_alpha()
+
 sky_img = pygame.transform.scale(
     pygame.image.load("Images/sky.png").convert(),
     (W, H - GH)
@@ -61,8 +61,10 @@ def loop():
                     if not over:
                         bird.flap()
                     can_flap = False
+
                 elif e.key == pygame.K_EQUALS:
                     show_hitboxes = not show_hitboxes
+
                 elif e.key == pygame.K_MINUS:
                     pause.toggle()
 
@@ -78,6 +80,7 @@ def loop():
                 if over:
                     if again_rect.collidepoint((mx, my)):
                         return "restart"
+
                     if menu_rect.collidepoint((mx, my)):
                         return "menu"
                 else:
@@ -93,6 +96,7 @@ def loop():
             over = True
 
         r = bird.rect()
+
         for p in pipes:
             if not over and not pause.active:
                 p.update()
@@ -148,11 +152,17 @@ def loop():
         pygame.display.update()
 
 
+# ---------------- MAIN GAME FLOW ----------------
+
 while True:
     menu = Menu(screen)
     menu.run()
 
-    result = loop()
+    while True:
+        result = loop()
 
-    if result == "menu":
-        continue
+        if result == "menu":
+            break  # go back to menu
+
+        if result == "restart":
+            continue  # restart game instantly (NO MENU)
